@@ -1,0 +1,15 @@
+# Erstmal alles ignorieren
+*
+
+# Unterordner trotzdem durchsuchen
+!*/
+
+# Nur Python- und Jupyter-Dateien aufnehmen
+!*.py
+!*.ipynb
+
+# .gitignore selbst versionieren
+!.gitignore
+
+# Jupyter-Checkpoint-Dateien nicht aufnehmen
+.ipynb_checkpoints/
