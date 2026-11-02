@@ -12,9 +12,9 @@ The output layout is compatible with that resampler:
     trajectory_regime_names.npy   (S,)
     metadata.json
 
-The regimes below are chosen to be more dynamically informative than fixed-point
-crossings: periodic-to-periodic, periodic-to-chaotic, chaotic-to-chaotic, and
-chaotic-to-periodic transitions. The boundary values are practical numerical
+The regimes below include fixed-point-to-chaotic, periodic-to-periodic,
+periodic-to-chaotic, chaotic-to-chaotic, and chaotic-to-periodic transitions.
+The boundary values are practical numerical
 transition markers for window sampling, not exact analytical bifurcation proofs.
 """
 
@@ -88,7 +88,9 @@ def normalize_phi(phi_raw: Array, start: float, end: float, boundary: float) -> 
 def regime_with_phi_range(
     regime: Regime, phi_start: float | None, phi_end: float | None
 ) -> Regime:
-    scale = max(abs(regime.start - regime.boundary), abs(regime.end - regime.boundary), 1e-8)
+    scale = max(
+        abs(regime.start - regime.boundary), abs(regime.end - regime.boundary), 1e-8
+    )
     return replace(
         regime,
         start=(
@@ -567,6 +569,34 @@ def default_regimes() -> list[Regime]:
             init_center=(-4.0, 0.0, 0.0),
             init_scale=(0.8, 0.8, 0.8),
         ),
+        Regime(
+            name="lorenz_rho_1_to_30",
+            family="Lorenz",
+            parameter="rho",
+            boundary=24.74,
+            start=1.0,
+            end=30.0,
+            transition_type="fixed_point_to_chaotic",
+            description="Lorenz rho sweep from 1 to 30 with fixed sigma=10, beta=8/3 and transition reference at rho=24.74.",
+            rhs_key="lorenz",
+            params={"sigma": sigma, "beta": beta},
+            init_center=(1.0, 1.0, 1.0),
+            init_scale=(0.2, 0.2, 0.2),
+        ),
+        Regime(
+            name="rossler_c_3_to_6",
+            family="Rossler",
+            parameter="c",
+            boundary=4.3,
+            start=3.0,
+            end=6.0,
+            transition_type="periodic_to_chaotic",
+            description="Rossler c sweep from 3 to 6 with fixed a=b=0.2 and transition reference at c=4.3.",
+            rhs_key="rossler",
+            params={"a": 0.2, "b": 0.2},
+            init_center=(0.0, -5.0, 0.5),
+            init_scale=(1.0, 1.0, 0.2),
+        ),
     ]
 
 
@@ -774,7 +804,9 @@ def main() -> None:
         and args.phi_start is not None
         and args.phi_start == args.phi_end
     ):
-        raise ValueError("--phi-start and --phi-end must differ for --parameter-mode linear")
+        raise ValueError(
+            "--phi-start and --phi-end must differ for --parameter-mode linear"
+        )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
